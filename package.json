@@ -7,19 +7,34 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "better-auth": "^1.7.25",
+    "daisyui": "^5.8.1",
+    "framer-motion": "^14.14.0",
+    "lucide-react": "^1.75.0",
     "next": "^16.4.3",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
-    "typescript": "^5.8.0",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^16.4.3"
-  }
+    "eslint-config-next": "^16.4.3",
+    "prettier": "^3.10.1",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "type": "module"
 }
