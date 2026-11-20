@@ -1988,3 +1988,8 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 [data-theme=dark] .photo-preview img{border-color:#73889a;background:#102330}
 [data-theme=dark] .photo-error,[data-theme=dark] .photo-field .required-mark{color:#ffb4a8}
 @media(max-width:380px){.photo-modes{grid-template-columns:1fr}}
+/* Auth divider label sat on a white strip in dark mode; match the dark auth panel surface. */
+[data-theme=dark] .auth-divider{border-bottom-color:#3a5063;color:#bdcddb}
+[data-theme=dark] .auth-divider span{background:#192d3d}
+/* Loading text used the light-theme slate (#63778b), below 4.5:1 on dark surfaces. */
+[data-theme=dark] .loading-state{color:#bdcddb}
