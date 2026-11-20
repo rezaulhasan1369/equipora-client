@@ -10,9 +10,10 @@ test("F63 required photo and mocked ImgBB success", async ({ page }) => {
   await page
     .getByRole("button", { name: "Create account", exact: true })
     .click();
-  await expect(page.locator("#registration-photo-error")).toContainText(
-    "valid HTTPS",
+  await expect(page.locator(".photo-error")).toContainText(
+    "Add a profile photo",
   );
+  await page.getByRole("radio", { name: "Upload photo" }).check();
   await page.route("**/api/backend/registration-image", (route) =>
     route.fulfill({
       status: 200,
@@ -20,7 +21,7 @@ test("F63 required photo and mocked ImgBB success", async ({ page }) => {
       body: JSON.stringify({ url: "https://i.ibb.co/demo/profile.png" }),
     }),
   );
-  await page.getByLabel("Upload profile photo (ImgBB)").setInputFiles({
+  await page.getByLabel("Choose a photo").setInputFiles({
     name: "profile.png",
     mimeType: "image/png",
     buffer: Buffer.from(
@@ -28,9 +29,8 @@ test("F63 required photo and mocked ImgBB success", async ({ page }) => {
       "base64",
     ),
   });
-  await expect(
-    page.getByLabel("Profile image URL", { exact: true }),
-  ).toHaveValue("https://i.ibb.co/demo/profile.png");
+  await expect(page.getByRole("status").filter({ hasText: "Uploaded profile.png" })).toBeVisible();
+  await expect(page.getByAltText("Profile photo preview")).toHaveAttribute("src", "https://i.ibb.co/demo/profile.png");
   await page
     .getByRole("button", { name: "Create account", exact: true })
     .click();

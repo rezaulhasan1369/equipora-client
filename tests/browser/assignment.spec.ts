@@ -102,7 +102,10 @@ test("server-side filters and anonymous detail protection", async ({
 test("password validation and registration feedback", async ({ page }) => {
   await page.goto("/register");
   await page.getByLabel("Full name").fill("New Customer");
-  await page.getByLabel("Profile image URL",{exact:true}).fill("https://example.test/profile.png");
+  // The form previews the pasted link; serve a real PNG for the non-resolving test host.
+  await page.route("https://example.test/**", (route) => route.fulfill({ status: 200, contentType: "image/png", body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lWQAAAAASUVORK5CYII=", "base64") }));
+  await page.getByLabel("Image URL",{exact:true}).fill("https://example.test/profile.png");
+  await expect(page.getByText("Image found")).toBeVisible();
   await page
     .getByLabel("Email address")
     .fill("new-" + Date.now() + "@example.test");

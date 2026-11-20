@@ -2,65 +2,37 @@
 import Link from "next/link";
 import { safeReturnTo } from "@/lib/gateway-policy";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useToast } from "@/components/toast";
 import { authClient } from "@/lib/auth-client";
+import { RegistrationPhoto, type PhotoHandle, type PhotoState } from "@/components/registration-photo";
 export function AuthForm({ register = false }: { register?: boolean }) {
   const params = useSearchParams(),
     router = useRouter(),
     [pending, setPending] = useState(false),
-    [photo, setPhoto] = useState(""),
-    [photoError, setPhotoError] = useState(""),
-    [uploading, setUploading] = useState(false),
+    [photo, setPhoto] = useState<PhotoState>({ url: null, busy: false }),
     [message, setMessage] = useState(""),
     [error, setError] = useState("");
+  // Synchronous guard: a double click must not send two sign-up requests before React re-renders.
+  const submitting = useRef(false);
+  const photoControl = useRef<PhotoHandle>(null);
   const notify = useToast();
   const raw = params.get("returnTo");
   const destination = safeReturnTo(raw);
-  async function uploadPhoto(file: File | undefined) {
-    if (!file) return;
-    setPhotoError("");
-    if (
-      !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-      file.size > 2000000
-    ) {
-      setPhotoError("Use a JPG, PNG, or WebP image smaller than 2 MB.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const image = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result).split(",")[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const response = await fetch("/api/backend/registration-image", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ image }),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error ?? "Image upload failed");
-      const url = new URL(result.url);
-      if (url.protocol !== "https:" || url.username || url.password)
-        throw new Error("Image upload failed");
-      setPhoto(url.href);
-    } catch (e) {
-      setPhotoError(e instanceof Error ? e.message : "Image upload failed");
-    } finally {
-      setUploading(false);
-    }
-  }
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (uploading) return;
+    if (submitting.current || photo.busy) return;
     setError("");
     setMessage("");
-    setPending(true);
     const f = new FormData(e.currentTarget),
       email = String(f.get("email")),
       password = String(f.get("password"));
+    if (register && !photo.url) {
+      photoControl.current?.reveal();
+      return;
+    }
+    submitting.current = true;
+    setPending(true);
     try {
       if (
         register &&
@@ -71,16 +43,12 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         throw new Error(
           "Use at least 6 characters, including uppercase and lowercase letters.",
         );
-      if (register && !photo.trim()) {
-        setPhotoError("Add a profile image URL or upload a photo.");
-        return;
-      }
       const result = register
         ? await authClient.signUp.email({
-            name: String(f.get("name")),
+            name: String(f.get("name")).trim(),
             email,
             password,
-            image: photo.trim(),
+            image: photo.url!,
           })
         : await authClient.signIn.email({ email, password });
       if (result.error)
@@ -94,11 +62,12 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         router.push(destination);
         router.refresh();
       }, 700);
+      return; // keep the form locked while navigating to the destination
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to sign in");
-    } finally {
-      setPending(false);
     }
+    submitting.current = false;
+    setPending(false);
   }
   return (
     <div className="container auth-layout">
@@ -150,51 +119,11 @@ export function AuthForm({ register = false }: { register?: boolean }) {
                   autoComplete="name"
                 />
               </label>
-              <label>
-                Profile image URL
-                <input
-                  name="image"
-                  required
-                  value={photo}
-                  onChange={(e) => {
-                    setPhoto(e.target.value);
-                    setPhotoError("");
-                  }}
-                  onInvalid={() =>
-                    setPhotoError(
-                      "Add a valid HTTPS profile image URL or upload a photo.",
-                    )
-                  }
-                  aria-invalid={Boolean(photoError)}
-                  aria-describedby="registration-photo-help registration-photo-error"
-                  maxLength={2048}
-                  className="input"
-                  type="url"
-                  placeholder="https://…"
-                  pattern="https://.*"
-                />
-              </label>
-              <small id="registration-photo-help">
-                Required for email registration. Paste an HTTPS image URL or
-                upload a photo.
-              </small>
-              <label>
-                Upload profile photo (ImgBB)
-                <input
-                  className="file-input"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  disabled={uploading || pending}
-                  onChange={(e) => void uploadPhoto(e.target.files?.[0])}
-                />
-              </label>
-              <p
-                id="registration-photo-error"
-                role={photoError ? "alert" : undefined}
-              >
-                {photoError}
-              </p>
-              {uploading && <p role="status">Uploading profile photo...</p>}
+              <RegistrationPhoto
+                disabled={pending}
+                handle={photoControl}
+                onChange={setPhoto}
+              />
             </>
           )}
           <label>
@@ -237,7 +166,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
           )}
           <button
             className="btn btn-primary full-width"
-            disabled={pending || uploading}
+            disabled={pending || photo.busy}
           >
             {pending ? "Please wait…" : register ? "Create account" : "Log in"}
           </button>
@@ -247,7 +176,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         </div>
         <button
           className="btn btn-outline full-width"
-          disabled={pending || uploading}
+          disabled={pending || photo.busy}
           onClick={async () => {
             setError("");
             setPending(true);

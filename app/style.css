@@ -1962,3 +1962,29 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 @media(max-width:600px){.rental-calendar{padding:10px}.calendar-heading .btn{font-size:.65rem;padding-inline:8px}.notification-list li{align-items:flex-start;flex-direction:column}.rental-activity{padding:16px}}
 
 .calendar-weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));text-align:center;font-size:.65rem;margin-top:12px}
+
+/* F12.2 registration photo: "Paste image URL" or "Upload photo" (ImgBB), both resolving to one HTTPS URL. */
+.photo-field{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:10px}
+.photo-field legend{font-size:.75rem;font-weight:600;color:#394d61;padding:0;margin-bottom:8px}
+.photo-field .required-mark{color:#9b3429}
+.photo-field:disabled{opacity:.7}
+.photo-modes{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border:1px solid #d1d9e1;border-radius:7px;background:#f3f6f8}
+.photo-mode{flex-direction:row;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 10px;border-radius:5px;cursor:pointer;font-size:.75rem;font-weight:600;color:#394d61;text-align:center;line-height:1.25;position:relative}
+.photo-mode input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.photo-mode.is-active{background:#fff;color:#203142;box-shadow:0 1px 3px rgba(32,49,66,.14);outline:1px solid #b9c6d2}
+.photo-mode:has(input:focus-visible){outline:3px solid #b66837;outline-offset:2px}
+.photo-drop{border:1px dashed #9fb0c0;border-radius:7px;padding:12px;background:#f8fafb}
+.photo-drop.is-busy{opacity:.75}
+.photo-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:56px;padding:8px 10px;border:1px solid #e2e8ed;border-radius:7px}
+.photo-preview img{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:#e8edf1;border:1px solid #c5d0da}
+.photo-preview-status{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:#394d61;flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
+.photo-error{font-size:.72rem;color:#9b3429;margin:0;min-height:0}
+.photo-error:empty{display:none}
+[data-theme=dark] .photo-field legend,[data-theme=dark] .photo-mode,[data-theme=dark] .photo-preview-status{color:#d5e1ec}
+[data-theme=dark] .photo-modes{background:#102330;border-color:#73889a}
+[data-theme=dark] .photo-mode.is-active{background:#2a4255;color:#fff;outline-color:#8aa0b3;box-shadow:none}
+[data-theme=dark] .photo-drop{background:#13283a;border-color:#8aa0b3}
+[data-theme=dark] .photo-preview{border-color:#3a5063}
+[data-theme=dark] .photo-preview img{border-color:#73889a;background:#102330}
+[data-theme=dark] .photo-error,[data-theme=dark] .photo-field .required-mark{color:#ffb4a8}
+@media(max-width:380px){.photo-modes{grid-template-columns:1fr}}
