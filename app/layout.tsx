@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           id="equipora-theme-init"
           dangerouslySetInnerHTML={{
             __html:
-              '(()=>{let p;try{p=localStorage.getItem("equipora-theme")}catch{}const explicit=p==="dark"||p==="light";document.documentElement.dataset.theme=explicit?p:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.themePreference=explicit?"explicit":"system"})()',
+              '(()=>{let p;try{p=localStorage.getItem("equipora-theme")}catch{}const explicit=p==="dark"||p==="light";document.documentElement.dataset.theme=explicit?p:"light";document.documentElement.dataset.themePreference=explicit?"explicit":"default"})()',
           }}
         />
       </head>

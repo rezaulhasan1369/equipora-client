@@ -80,6 +80,10 @@ test("F5 menu keyboard, focus return and route closure", async ({ page }) => {
   ).toBe(true);
   await page.locator("header nav a").last().focus();
   await page.keyboard.press("Tab");
+  await expect(page.locator("header .theme-toggle")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(toggle).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(page.locator("header .brand")).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(toggle).toBeFocused();

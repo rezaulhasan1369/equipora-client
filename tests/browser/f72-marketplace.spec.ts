@@ -562,7 +562,7 @@ test("a mismatched equipment quote cannot enable Checkout", async ({
 
 async function setTheme(page: Page, theme: string) {
   if ((await page.locator("html").getAttribute("data-theme")) !== theme)
-    await page.locator(".cinematic-footer .theme-toggle").click();
+    await page.locator(".site-header .theme-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
   await page.evaluate(() => scrollTo(0, 0));
   await expect(page.locator(".premium-header")).not.toHaveClass(/is-scrolled/);

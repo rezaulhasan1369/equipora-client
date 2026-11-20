@@ -1894,10 +1894,6 @@ html{scroll-padding-top:110px;scroll-behavior:smooth}
 [data-theme=dark] .form-meta span{color:#d7e5f0}
 
 [data-theme=dark] .quote strong{color:#e6eef5}
-/* Footer theme control must stay legible against the authored dark artwork in either mode. */
-.cinematic-footer .theme-toggle{color:#e6eef5;border-color:#9fb7c9;background:#08233570}
-.cinematic-footer .theme-toggle:hover{background:#e6eef5;color:#233544}
-.cinematic-footer .theme-toggle:focus-visible{outline:3px solid white;outline-offset:4px}
 
 /* F7.2: focused discovery and transparent rental summaries. */
 .compare-button{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:6px 10px;margin-top:12px;border:1px solid #a1afbb;border-radius:8px;font-size:.8rem;color:#344a5d;background:#f4f7f9}
@@ -1926,7 +1922,7 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 /* F7.2 owner polish: catalog-only top surface; floating and other routes retain F5 styling. */
 [data-theme=dark]{--catalog-surface:#101f2b}
 [data-theme=dark] body{background:var(--catalog-surface)}
-[data-theme=dark] .premium-header[data-catalog=true]:not(.is-scrolled):before{background:var(--catalog-surface);border-bottom-color:transparent}
+[data-theme=dark] .premium-header[data-equipment=true]:before{background:var(--catalog-surface);border-bottom-color:transparent}
 [data-theme=dark] .detail-price{color:var(--color-base-content)!important}
 .comparison-tray .tray-toggle{display:none}
 @media(max-width:767px){
@@ -1938,6 +1934,21 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 /* Keep the close control and title available while the existing form scrolls. */
 .booking-heading{position:sticky;top:-35px;z-index:2;margin:-35px -35px 0;padding:35px 58px 14px 35px;background:inherit;border-bottom:1px solid var(--color-base-300,#d9e2ea)}
 @media(max-width:600px){.booking-heading{top:-30px;margin:-30px -22px 0;padding:30px 58px 14px 22px}}
+
+/* F7.3: existing shared header, with one persistent theme control. */
+.premium-header .header-inner{grid-template-columns:210px minmax(0,1fr) 44px;gap:16px}
+.premium-header .main-nav{grid-column:2;grid-row:1}
+.header-controls{grid-column:3;grid-row:1;display:flex;align-items:center;gap:8px}
+.premium-header .theme-toggle{width:44px;height:44px;min-height:44px;min-width:44px;margin:0;padding:0;border-radius:50%;color:var(--color-base-content);background:transparent}
+.premium-header .theme-toggle:hover{background:var(--color-base-200)}
+.premium-header .theme-toggle:active{background:var(--color-base-300,var(--color-base-200))}
+@media(min-width:1101px){.premium-header[data-equipment=true]:not(.is-scrolled) .header-inner{width:min(1264px,calc(100% - 96px));padding-inline:0}}
+@media(max-width:1100px){.header-controls{margin-left:auto}.premium-header .header-inner{gap:8px}.premium-header[data-equipment=true]:not(.is-scrolled) .header-inner{width:calc(100% - 56px);padding-inline:0}}
+@media(max-width:760px){.premium-header[data-equipment=true]:not(.is-scrolled) .header-inner{width:calc(100% - 36px)}}
 .catalog-select{position:relative;display:block;width:100%}
 .catalog-select .select{width:100%;appearance:none;background-image:none!important;padding-right:44px}
 .catalog-select>svg{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--color-base-content)}
+
+/* Match the existing Tailwind container caps as well as the page gutters. */
+@media(min-width:768px) and (max-width:1023px){.premium-header[data-equipment=true]:not(.is-scrolled) .header-inner{max-width:768px}}
+@media(min-width:1024px) and (max-width:1279px){.premium-header[data-equipment=true]:not(.is-scrolled) .header-inner{max-width:1024px}}

@@ -66,6 +66,11 @@ export function Header() {
     <header
       ref={header}
       data-catalog={path === "/equipment" ? "true" : undefined}
+      data-equipment={
+        path === "/equipment" || path.startsWith("/equipment/")
+          ? "true"
+          : undefined
+      }
       className={
         "site-header premium-header " +
         (scrolled ? "is-scrolled " : "") +
@@ -106,17 +111,6 @@ export function Header() {
           <Brand />
           <span className="sr-only"> home</span>
         </Link>
-        <button
-          ref={toggle}
-          className="btn btn-ghost mobile-toggle"
-          aria-label="Toggle navigation"
-          aria-expanded={open}
-          aria-controls="equipora-navigation"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X /> : <Menu />}
-          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-        </button>
         <nav
           id="equipora-navigation"
           className={open ? "main-nav is-open" : "main-nav"}
@@ -183,6 +177,20 @@ export function Header() {
             )}
           </div>
         </nav>
+        <div className="header-controls">
+          <ThemeToggle />
+          <button
+            ref={toggle}
+            className="btn btn-ghost mobile-toggle"
+            aria-label="Toggle navigation"
+            aria-expanded={open}
+            aria-controls="equipora-navigation"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X /> : <Menu />}
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+          </button>
+        </div>
       </div>
     </header>
   );
@@ -302,7 +310,6 @@ export function Footer() {
               <br />
               Rent with clarity.
             </p>
-            <ThemeToggle />
           </div>
         </div>
         <div className="demo-partners">

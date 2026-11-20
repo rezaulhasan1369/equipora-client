@@ -3,32 +3,19 @@ import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 function subscribe(update: () => void) {
   window.addEventListener("equipora-theme", update);
-  const media = matchMedia("(prefers-color-scheme: dark)");
-  const system = () => {
-    if (document.documentElement.dataset.themePreference !== "explicit") {
-      document.documentElement.dataset.theme = media.matches ? "dark" : "light";
-      update();
-    }
-  };
   const storage = (e: StorageEvent) => {
-    if (e.key !== "equipora-theme") return;
+    if (e.key !== "equipora-theme" && e.key !== null) return;
     const valid = e.newValue === "light" || e.newValue === "dark";
     document.documentElement.dataset.themePreference = valid
       ? "explicit"
-      : "system";
-    document.documentElement.dataset.theme = valid
-      ? e.newValue!
-      : media.matches
-        ? "dark"
-        : "light";
+      : "default";
+    document.documentElement.dataset.theme = valid ? e.newValue! : "light";
     update();
   };
   window.addEventListener("storage", storage);
-  media.addEventListener("change", system);
   return () => {
     window.removeEventListener("equipora-theme", update);
     window.removeEventListener("storage", storage);
-    media.removeEventListener("change", system);
   };
 }
 function snapshot() {
@@ -40,6 +27,7 @@ export function ThemeToggle() {
     <button
       className="btn btn-outline theme-toggle"
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Switch to light theme" : "Switch to dark theme"}
       aria-pressed={dark}
       onClick={() => {
         const theme = dark ? "light" : "dark";
@@ -53,8 +41,12 @@ export function ThemeToggle() {
         window.dispatchEvent(new Event("equipora-theme"));
       }}
     >
-      {dark ? <Sun size={16} /> : <Moon size={16} />}{" "}
-      {dark ? "Light theme" : "Dark theme"}
+      {dark ? (
+        <Sun size={18} aria-hidden="true" />
+      ) : (
+        <Moon size={18} aria-hidden="true" />
+      )}
+      <span className="sr-only">{dark ? "Light theme" : "Dark theme"}</span>
     </button>
   );
 }

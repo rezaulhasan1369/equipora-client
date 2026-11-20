@@ -126,7 +126,7 @@ test("F63 history URL and page counts (mocked response; scoped API separately te
     });
   }
 });
-test("F63 system fallback, persisted choice and cross-tab theme", async ({
+test("F63 light default, persisted choice and cross-tab theme", async ({
   browser,
 }) => {
   const c = await browser.newContext({ colorScheme: "dark" });
@@ -142,12 +142,15 @@ test("F63 system fallback, persisted choice and cross-tab theme", async ({
     await route.continue();
   });
   await p.goto("http://localhost:3000/");
-  await expect(p.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(p.locator("html")).toHaveAttribute("data-theme", "light");
   expect(
     await p.evaluate(
       () => (window as Window & { firstTheme?: string }).firstTheme,
     ),
-  ).toBe("dark");
+  ).toBe("light");
+  await p.getByRole("button", { name: "Switch to dark theme" }).click();
+  await p.reload();
+  await expect(p.locator("html")).toHaveAttribute("data-theme", "dark");
   await p.getByRole("button", { name: "Switch to light theme" }).click();
   await p.reload();
   await expect(p.locator("html")).toHaveAttribute("data-theme", "light");
