@@ -1,13 +1,14 @@
 "use client";
-import { equipmentImage } from "@/lib/equipment-image";
-import Image from "next/image";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useSession } from "./session";
 import { api } from "@/lib/api";
 import { money, type Equipment } from "@/lib/types";
 import { Heart, MapPin, ShieldCheck, X } from "lucide-react";
 import { CompareButton } from "./discovery";
-export function Details({ id }: { id: string }) {
+import { EquipmentVisual } from "./equipment-visual";
+import { rememberEquipment } from "@/lib/discovery-store";
+export function Details({ id: requestedId }: { id: string }) {
+  const id = requestedId.toLowerCase();
   const { user } = useSession(),
     [item, setItem] = useState<Equipment | null>(null),
     [error, setError] = useState(""),
@@ -16,6 +17,7 @@ export function Details({ id }: { id: string }) {
     [busy, setBusy] = useState(false),
     [quote, setQuote] = useState(0);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [version, setVersion] = useState(0);
   useEffect(() => {
     const d = dialogRef.current;
     if (modal && d && !d.open) {
@@ -26,10 +28,22 @@ export function Details({ id }: { id: string }) {
     }
   }, [modal]);
   useEffect(() => {
+    let active = true;
     api<Equipment>("equipment/" + id)
-      .then(setItem)
-      .catch((e) => setError(e.message));
-  }, [id]);
+      .then((value) => {
+        if (active) {
+          setItem(value);
+          setError("");
+          if (value.status === "approved") rememberEquipment(value.id);
+        }
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, version]);
   async function book(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -55,15 +69,32 @@ export function Details({ id }: { id: string }) {
       setBusy(false);
     }
   }
-  if (!item)
+  if (!item || item.id !== id)
     return (
       <div className="container section">
         {error ? (
           <div role="alert" className="alert alert-error">
             {error}
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                setError("");
+                setVersion((v) => v + 1);
+              }}
+            >
+              Retry equipment
+            </button>
           </div>
         ) : (
-          <div role="status">Loading equipment…</div>
+          <div
+            className="discovery-skeleton"
+            role="status"
+            aria-label="Loading equipment"
+          >
+            <span />
+            <span />
+          </div>
         )}
       </div>
     );
@@ -71,14 +102,7 @@ export function Details({ id }: { id: string }) {
     <div className="container section">
       <p className="eyebrow">{item.category}</p>
       <div className="detail-grid">
-        <Image
-          unoptimized
-          className="detail-image"
-          src={equipmentImage(item)}
-          alt={item.name}
-          width="1000"
-          height="800"
-        />
+        <EquipmentVisual item={item} className="detail-image" />
         <div>
           <h1>{item.name}</h1>
           <p className="location">

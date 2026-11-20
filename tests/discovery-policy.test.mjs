@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   cleanIds,
   restoredIds,
+  recentIds,
 } from "../lib/discovery-policy.mjs";
 const a = "a".repeat(24),
   b = "b".repeat(24);
@@ -21,4 +22,10 @@ test("device selections retain only bounded unique equipment IDs", () => {
     3,
   );
   assert.deepEqual(restoredIds(JSON.stringify([a, b]), 3), [a, b]);
+});
+test("recent history moves revisited IDs to the front and stays at eight", () => {
+  const ids = Array.from({ length: 8 }, (_, i) => String(i).repeat(24));
+  assert.equal(recentIds(ids, "f".repeat(24)).length, 8);
+  assert.deepEqual(recentIds([a, b], b), [b, a]);
+  assert.deepEqual(recentIds([a], "bad"), [a]);
 });

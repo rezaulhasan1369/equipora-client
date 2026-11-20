@@ -1,4 +1,5 @@
 "use client";
+import { RecentlyViewed } from "./recently-viewed";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -215,6 +216,7 @@ export function Catalog() {
           </nav>
         </>
       )}
+      <RecentlyViewed />
     </div>
   );
 }

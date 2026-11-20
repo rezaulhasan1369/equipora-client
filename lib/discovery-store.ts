@@ -1,5 +1,5 @@
 "use client";
-import { cleanIds, restoredIds } from "./discovery-policy.mjs";
+import { cleanIds, restoredIds, recentIds } from "./discovery-policy.mjs";
 const empty: string[] = [];
 function createStore(key: string, limit: number) {
   let current = empty;
@@ -48,3 +48,8 @@ function createStore(key: string, limit: number) {
   };
 }
 export const compareStore = createStore("equipora-compare-v1", 3);
+export const recentStore = createStore("equipora-recent-v1", 8);
+export function rememberEquipment(id: string) {
+  recentStore.restore();
+  recentStore.set(recentIds(recentStore.getSnapshot(), id));
+}
