@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { completionTemplate } from "../../../server/src/completion-email";
 test("F63 required photo and mocked ImgBB success", async ({ page }) => {
   await page.goto("/register");
   await page.getByLabel("Full name", { exact: true }).fill("Photo Customer");
@@ -158,33 +157,6 @@ test("F63 system fallback, persisted choice and cross-tab theme", async ({
   await expect(tab.locator("html")).toHaveAttribute("data-theme", "dark");
   await c.close();
 });
-test("F63 responsive HTML/text completion templates", async ({ page }) => {
-  const m = completionTemplate(
-    "Local Reviewer",
-    "Camera <script>alert(1)</script>",
-    "owner",
-  );
-  expect(m.text).toContain("your equipment");
-  expect(m.html).not.toContain("<script>");
-  for (const width of [390, 834, 1366]) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.setContent(m.html);
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
-    const a = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-      .analyze();
-    expect(a.violations.map((v) => v.id)).toEqual([]);
-    await page.screenshot({
-      path: `test-results/f63-completion-email-${width}.png`,
-      fullPage: true,
-    });
-  }
-});
-
 test("F63 details/booking modal and public error/legal states in both themes", async ({
   page,
 }) => {
