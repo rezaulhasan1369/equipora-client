@@ -1938,3 +1938,6 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 /* Keep the close control and title available while the existing form scrolls. */
 .booking-heading{position:sticky;top:-35px;z-index:2;margin:-35px -35px 0;padding:35px 58px 14px 35px;background:inherit;border-bottom:1px solid var(--color-base-300,#d9e2ea)}
 @media(max-width:600px){.booking-heading{top:-30px;margin:-30px -22px 0;padding:30px 58px 14px 22px}}
+.catalog-select{position:relative;display:block;width:100%}
+.catalog-select .select{width:100%;appearance:none;background-image:none!important;padding-right:44px}
+.catalog-select>svg{position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--color-base-content)}

@@ -2,7 +2,7 @@
 import { RecentlyViewed } from "./recently-viewed";
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { api } from "@/lib/api";
 import { categories, type Equipment } from "@/lib/types";
 import { EquipmentCard } from "./equipment-card";
@@ -75,33 +75,39 @@ export function Catalog() {
         </label>
         <label>
           Category
-          <select
-            className="select"
-            name="category"
-            aria-label="Category"
-            defaultValue={search.get("category") ?? ""}
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
+          <span className="catalog-select">
+            <select
+              className="select"
+              name="category"
+              aria-label="Category"
+              defaultValue={search.get("category") ?? ""}
+            >
+              <option value="">All categories</option>
+              {categories.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+            <ChevronDown size={18} aria-hidden="true" />
+          </span>
         </label>
         <label>
           Rental type
-          <select
-            className="select"
-            name="rentalType"
-            aria-label="Rental type"
-            defaultValue={search.get("rentalType") ?? ""}
-          >
-            <option value="">Any period</option>
-            {["daily", "weekly", "monthly"].map((t) => (
-              <option value={t} key={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+          <span className="catalog-select">
+            <select
+              className="select"
+              name="rentalType"
+              aria-label="Rental type"
+              defaultValue={search.get("rentalType") ?? ""}
+            >
+              <option value="">Any period</option>
+              {["daily", "weekly", "monthly"].map((t) => (
+                <option value={t} key={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={18} aria-hidden="true" />
+          </span>
         </label>
         <label>
           Min price ($)
@@ -127,29 +133,35 @@ export function Catalog() {
         </label>
         <label>
           Availability
-          <select
-            className="select"
-            name="available"
-            aria-label="Availability"
-            defaultValue={search.get("available") ?? ""}
-          >
-            <option value="">All listings</option>
-            <option value="true">Available</option>
-            <option value="false">Unavailable</option>
-          </select>
+          <span className="catalog-select">
+            <select
+              className="select"
+              name="available"
+              aria-label="Availability"
+              defaultValue={search.get("available") ?? ""}
+            >
+              <option value="">All listings</option>
+              <option value="true">Available</option>
+              <option value="false">Unavailable</option>
+            </select>
+            <ChevronDown size={18} aria-hidden="true" />
+          </span>
         </label>
         <label>
           Sort by
-          <select
-            className="select"
-            name="sort"
-            aria-label="Sort by"
-            defaultValue={search.get("sort") ?? "recent"}
-          >
-            <option value="recent">Recently added</option>
-            <option value="price-asc">Price: low to high</option>
-            <option value="price-desc">Price: high to low</option>
-          </select>
+          <span className="catalog-select">
+            <select
+              className="select"
+              name="sort"
+              aria-label="Sort by"
+              defaultValue={search.get("sort") ?? "recent"}
+            >
+              <option value="recent">Recently added</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+            </select>
+            <ChevronDown size={18} aria-hidden="true" />
+          </span>
         </label>
         <button className="btn btn-primary" type="submit">
           <SlidersHorizontal size={16} /> Apply filters
