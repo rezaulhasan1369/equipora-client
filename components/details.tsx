@@ -4,6 +4,7 @@ import { useSession } from "./session";
 import { api } from "@/lib/api";
 import { money, type Equipment } from "@/lib/types";
 import { Heart, MapPin, ShieldCheck, X } from "lucide-react";
+import { AvailabilityCalendar } from "./availability-calendar";
 import { CompareButton } from "./discovery";
 import { EquipmentVisual } from "./equipment-visual";
 import { EquipmentSharing } from "./equipment-sharing";
@@ -223,29 +224,17 @@ export function Details({ id: requestedId }: { id: string }) {
               <h2 id="booking-title">Plan your rental.</h2>
             </div>
             <p>{item.name}</p>
-            <form
-              onSubmit={book}
-              onChange={(e) => {
-                const target = e.nativeEvent.target;
-                if (
-                  !(target instanceof HTMLInputElement) ||
-                  !["start", "end", "quantity"].includes(target.name)
-                )
-                  return;
-                const form = new FormData(e.currentTarget);
-                setPeriod({
-                  start: String(form.get("start")),
-                  end: String(form.get("end")),
-                  quantity: Number(form.get("quantity")),
-                });
-              }}
-            >
+            <form onSubmit={book}>
               <div className="form-grid">
                 <label>
                   Start date
                   <input
                     className="input"
                     name="start"
+                    value={period.start}
+                    onChange={(e) =>
+                      setPeriod((p) => ({ ...p, start: e.target.value }))
+                    }
                     type="date"
                     required
                     min={new Date().toISOString().slice(0, 10)}
@@ -256,6 +245,10 @@ export function Details({ id: requestedId }: { id: string }) {
                   <input
                     className="input"
                     name="end"
+                    value={period.end}
+                    onChange={(e) =>
+                      setPeriod((p) => ({ ...p, end: e.target.value }))
+                    }
                     type="date"
                     required
                     min={new Date().toISOString().slice(0, 10)}
@@ -271,9 +264,20 @@ export function Details({ id: requestedId }: { id: string }) {
                   min="1"
                   max={item.quantity}
                   defaultValue="1"
+                  onChange={(e) =>
+                    setPeriod((p) => ({
+                      ...p,
+                      quantity: Number(e.target.value),
+                    }))
+                  }
                   required
                 />
               </label>
+              <AvailabilityCalendar
+                id={id}
+                period={period}
+                onChange={setPeriod}
+              />
               <label>
                 Contact number
                 <input
