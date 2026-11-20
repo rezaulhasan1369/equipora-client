@@ -212,14 +212,16 @@ export function Details({ id: requestedId }: { id: string }) {
           onCancel={closeBooking}
         >
           <div className="modal-box">
-            <button
-              className="btn btn-ghost modal-close"
-              aria-label="Close booking"
-              onClick={closeBooking}
-            >
-              <X />
-            </button>
-            <h2 id="booking-title">Plan your rental.</h2>
+            <div className="booking-heading">
+              <button
+                className="btn btn-ghost modal-close"
+                aria-label="Close booking"
+                onClick={closeBooking}
+              >
+                <X />
+              </button>
+              <h2 id="booking-title">Plan your rental.</h2>
+            </div>
             <p>{item.name}</p>
             <form
               onSubmit={book}

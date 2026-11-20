@@ -1922,3 +1922,19 @@ html{scroll-padding-top:110px;scroll-behavior:smooth}
 @media(max-width:767px){.comparison-tray{display:grid;grid-template-columns:1fr auto}.comparison-tray>div:first-child{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}.comparison-tray strong{white-space:nowrap;flex-shrink:0}.comparison-tray .comparison-message{margin-top:0;max-width:175px}.comparison-tray-actions{grid-column:1/-1;justify-content:space-between}.comparison-reserve{height:130px}}
 
 body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:none}
+
+/* F7.2 owner polish: catalog-only top surface; floating and other routes retain F5 styling. */
+[data-theme=dark]{--catalog-surface:#101f2b}
+[data-theme=dark] body{background:var(--catalog-surface)}
+[data-theme=dark] .premium-header[data-catalog=true]:not(.is-scrolled):before{background:var(--catalog-surface);border-bottom-color:transparent}
+[data-theme=dark] .detail-price{color:var(--color-base-content)!important}
+.comparison-tray .tray-toggle{display:none}
+@media(max-width:767px){
+  .comparison-tray .tray-toggle{display:inline-flex;flex-shrink:0;min-height:44px;padding-inline:8px;font-size:.7rem}
+  .comparison-tray>div:first-child{flex-wrap:wrap}
+  .comparison-tray .comparison-message{order:3;max-width:none;flex-basis:100%}
+  .comparison-tray.is-minimized :is(.comparison-message,ul,.comparison-tray-actions){display:none}
+}
+/* Keep the close control and title available while the existing form scrolls. */
+.booking-heading{position:sticky;top:-35px;z-index:2;margin:-35px -35px 0;padding:35px 58px 14px 35px;background:inherit;border-bottom:1px solid var(--color-base-300,#d9e2ea)}
+@media(max-width:600px){.booking-heading{top:-30px;margin:-30px -22px 0;padding:30px 58px 14px 22px}}

@@ -145,7 +145,7 @@ export function CompareButton({ item }: { item: Equipment }) {
     <button
       type="button"
       className="compare-button"
-      aria-label={`Compare ${item.name}`}
+      aria-label={`Compare ${item.name}${selected ? ", selected" : ""}`}
       aria-pressed={selected}
       onClick={() => toggle(item.id)}
     >
@@ -156,12 +156,13 @@ export function CompareButton({ item }: { item: Equipment }) {
 }
 function ComparisonTray() {
   const { ids, items, remove, clear, message } = useDiscovery();
+  const [minimized, setMinimized] = useState(false);
   if (!ids.length) return null;
   return (
     <>
       <div className="comparison-reserve" aria-hidden="true" />
       <aside
-        className="comparison-tray"
+        className={"comparison-tray" + (minimized ? " is-minimized" : "")}
         aria-label="Selected equipment comparison"
       >
         <div>
@@ -171,8 +172,17 @@ function ComparisonTray() {
           <p role="status" className="comparison-message">
             {message || "Your selection stays on this device."}
           </p>
+          <button
+            type="button"
+            className="tray-toggle btn btn-ghost btn-sm"
+            aria-expanded={!minimized}
+            aria-controls="comparison-tray-items comparison-tray-actions"
+            onClick={() => setMinimized((value) => !value)}
+          >
+            {minimized ? "Expand comparison" : "Minimize comparison"}
+          </button>
         </div>
-        <ul>
+        <ul id="comparison-tray-items">
           {ids.map((id, index) => {
             const name =
               items.find((item) => item.id === id)?.name ?? `Item ${index + 1}`;
@@ -190,7 +200,7 @@ function ComparisonTray() {
             );
           })}
         </ul>
-        <div className="comparison-tray-actions">
+        <div className="comparison-tray-actions" id="comparison-tray-actions">
           <Link className="btn btn-primary btn-sm" href="/compare">
             Compare items
           </Link>

@@ -65,6 +65,7 @@ export function Header() {
   return (
     <header
       ref={header}
+      data-catalog={path === "/equipment" ? "true" : undefined}
       className={
         "site-header premium-header " +
         (scrolled ? "is-scrolled " : "") +
