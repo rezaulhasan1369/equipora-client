@@ -183,7 +183,7 @@ export function Catalog() {
           </div>
           <div className="equipment-grid">
             {data.items.map((item) => (
-              <EquipmentCard item={item} key={item.id} />
+              <EquipmentCard item={item} key={item.id} comparison />
             ))}
           </div>
           {!data.items.length && (

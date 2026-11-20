@@ -1,4 +1,5 @@
 "use client";
+import { CompareButton } from "./discovery";
 import { equipmentImage } from "@/lib/equipment-image";
 import Image from "next/image";
 import { useState } from "react";
@@ -7,7 +8,13 @@ import { MapPin, ArrowUpRight } from "lucide-react";
 import type { Equipment } from "@/lib/types";
 import { money } from "@/lib/types";
 import { useSession } from "./session";
-export function EquipmentCard({ item }: { item: Equipment }) {
+export function EquipmentCard({
+  item,
+  comparison = false,
+}: {
+  item: Equipment;
+  comparison?: boolean;
+}) {
   const { user } = useSession();
   const [imageFailed, setImageFailed] = useState(false);
   return (
@@ -70,6 +77,7 @@ export function EquipmentCard({ item }: { item: Equipment }) {
             <ArrowUpRight size={18} />
           </Link>
         </div>
+        {comparison && <CompareButton item={item} />}
       </div>
     </article>
   );

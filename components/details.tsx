@@ -6,6 +6,7 @@ import { useSession } from "./session";
 import { api } from "@/lib/api";
 import { money, type Equipment } from "@/lib/types";
 import { Heart, MapPin, ShieldCheck, X } from "lucide-react";
+import { CompareButton } from "./discovery";
 export function Details({ id }: { id: string }) {
   const { user } = useSession(),
     [item, setItem] = useState<Equipment | null>(null),
@@ -131,6 +132,11 @@ export function Details({ id }: { id: string }) {
                 <Heart size={18} /> Save favorite
               </button>
             </div>
+          )}
+          {item.status === "approved" && (
+            <>
+              <CompareButton item={item} />
+            </>
           )}
           {notice && (
             <p className="alert alert-success" role="status">

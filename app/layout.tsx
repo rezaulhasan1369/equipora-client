@@ -1,3 +1,4 @@
+import { DiscoveryProvider } from "@/components/discovery";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { SessionProvider } from "@/components/session";
@@ -42,12 +43,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <SessionProvider>
           <ToastProvider>
-            <a href="#main-content" className="skip-link">
-              Skip to content
-            </a>
-            <Header />
-            <main id="main-content">{children}</main>
-            <Footer />
+            <DiscoveryProvider>
+              <a href="#main-content" className="skip-link">
+                Skip to content
+              </a>
+              <Header />
+              <main id="main-content">{children}</main>
+              <Footer />
+            </DiscoveryProvider>
           </ToastProvider>
         </SessionProvider>
       </body>
