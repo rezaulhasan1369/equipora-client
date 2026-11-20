@@ -1993,3 +1993,6 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 [data-theme=dark] .auth-divider span{background:#192d3d}
 /* Loading text used the light-theme slate (#63778b), below 4.5:1 on dark surfaces. */
 [data-theme=dark] .loading-state{color:#bdcddb}
+/* The hero keeps its light artwork in dark mode, so its secondary link must keep the hero's dark ink
+   (the generic dark-theme link colour made "See how it works" nearly invisible). */
+[data-theme=dark] .premium-hero .text-link{color:#233544;border-color:#233544}
