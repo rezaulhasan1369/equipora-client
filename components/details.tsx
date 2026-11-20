@@ -6,6 +6,7 @@ import { money, type Equipment } from "@/lib/types";
 import { Heart, MapPin, ShieldCheck, X } from "lucide-react";
 import { CompareButton } from "./discovery";
 import { EquipmentVisual } from "./equipment-visual";
+import { EquipmentSharing } from "./equipment-sharing";
 import { rememberEquipment } from "@/lib/discovery-store";
 export function Details({ id: requestedId }: { id: string }) {
   const id = requestedId.toLowerCase();
@@ -160,6 +161,7 @@ export function Details({ id: requestedId }: { id: string }) {
           {item.status === "approved" && (
             <>
               <CompareButton item={item} />
+              <EquipmentSharing item={item} />
             </>
           )}
           {notice && (
