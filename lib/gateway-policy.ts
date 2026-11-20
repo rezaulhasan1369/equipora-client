@@ -61,6 +61,7 @@ export function gatewayPath(parts: string[], auth: boolean) {
       "owner",
       "admin",
       "rentals",
+      "notifications",
       "checkout",
       "payments",
       "analytics",

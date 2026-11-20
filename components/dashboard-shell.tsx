@@ -1,4 +1,5 @@
 "use client";
+import { NotificationIndicator } from "./rental-workspace";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -54,6 +55,7 @@ export function DashboardShell({
               </Link>
             ),
           )}
+          {user.role !== "admin" && <NotificationIndicator />}
         </nav>
         <Link href="/equipment" className="text-link">
           ← Back to equipment

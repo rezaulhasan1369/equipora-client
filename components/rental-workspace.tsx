@@ -1,8 +1,24 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useSession } from "./session";
+type Notice = {
+  id: string;
+  bookingId: string;
+  title: string;
+  equipmentName: string;
+  createdAt: string;
+  readAt: string | null;
+};
+type Notices = {
+  items: Notice[];
+  total: number;
+  unread: number;
+  page: number;
+  limit: number;
+};
 function useWorkspace<T>(path: string) {
   const { user, pending } = useSession();
   const [revision, setRevision] = useState(0);
@@ -54,6 +70,26 @@ function useWorkspace<T>(path: string) {
     reload: () => setRevision((v) => v + 1),
   };
 }
+export function NotificationIndicator() {
+  const path = usePathname(),
+    { data } = useWorkspace<Notices>("notifications");
+  return (
+    <Link
+      href="/dashboard/notifications"
+      aria-current={path === "/dashboard/notifications" ? "page" : undefined}
+    >
+      Notifications{" "}
+      {data && data.unread > 0 && (
+        <span
+          className="notification-count"
+          aria-label={`${data.unread} unread notifications`}
+        >
+          {data.unread > 99 ? "99+" : data.unread}
+        </span>
+      )}
+    </Link>
+  );
+}
 function Feedback({
   error,
   loading,
@@ -73,6 +109,124 @@ function Feedback({
   ) : loading ? (
     <p role="status">Loading your rental workspace…</p>
   ) : null;
+}
+export function NotificationCenter() {
+  const [page, setPage] = useState(1),
+    [busy, setBusy] = useState(""),
+    [message, setMessage] = useState(""),
+    { data, error, reload } = useWorkspace<Notices>(
+      "notifications?page=" + page,
+    );
+  return (
+    <>
+      <p className="eyebrow">YOUR RENTAL UPDATES</p>
+      <h1>Notifications</h1>
+      <p className="lead">
+        Recorded payment and rental status updates, just for your account.
+      </p>
+      <button type="button" className="btn btn-outline btn-sm" onClick={reload}>
+        Refresh notifications
+      </button>
+      <Feedback error={error} loading={!data && !error} retry={reload} />
+      {message && (
+        <p role="status" className="alert">
+          {message}
+        </p>
+      )}
+      {data && (
+        <>
+          <p className="small-print">
+            {data.unread} unread · {data.total} notifications
+          </p>
+          {data.items.length ? (
+            <ul className="notification-list">
+              {data.items.map((n) => (
+                <li
+                  key={n.id}
+                  className={n.readAt ? "" : "notification-unread"}
+                >
+                  <div>
+                    <h2>{n.title}</h2>
+                    <p>{n.equipmentName}</p>
+                    <time dateTime={n.createdAt}>
+                      {new Date(n.createdAt).toLocaleString()}
+                    </time>
+                    <p>
+                      <Link
+                        className="text-link"
+                        href={"/dashboard/rentals/" + n.bookingId}
+                      >
+                        View rental details
+                      </Link>
+                    </p>
+                  </div>
+                  {n.readAt ? (
+                    <span className="small-print">Read</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-sm"
+                      aria-label={`Mark as read: ${n.title}, ${n.equipmentName}`}
+                      disabled={!!busy}
+                      onClick={async () => {
+                        setBusy(n.id);
+                        setMessage("");
+                        try {
+                          await api(
+                            "notifications/" + n.id + "/read",
+                            "PATCH",
+                            {},
+                          );
+                          setMessage("Notification marked as read.");
+                          window.dispatchEvent(
+                            new Event("equipora-notifications-read"),
+                          );
+                        } catch (e) {
+                          setMessage(
+                            e instanceof Error
+                              ? e.message
+                              : "Could not mark this notification as read.",
+                          );
+                        } finally {
+                          setBusy("");
+                        }
+                      }}
+                    >
+                      {busy === n.id ? "Saving…" : "Mark as read"}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="empty-state">
+              No notifications yet. New recorded rental updates will appear
+              here.
+            </p>
+          )}
+          <nav className="pagination" aria-label="Notification pages">
+            <button
+              className="btn btn-outline btn-sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Previous
+            </button>
+            <span>
+              Page {page} of {Math.max(1, Math.ceil(data.total / data.limit))}
+            </span>
+            <button
+              className="btn btn-outline btn-sm"
+              disabled={page * data.limit >= data.total}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </button>
+          </nav>
+        </>
+      )}
+    </>
+  );
 }
 type Activity = {
   id: string;
