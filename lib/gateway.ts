@@ -48,21 +48,35 @@ export async function gateway(
       const value = req.headers.get(name);
       if (value) headers.set(name, value);
     }
-    const upstream = await fetch(
+    const target =
       apiOrigin() +
-        "/api/" +
-        (auth ? "auth/" : "") +
-        parts.join("/") +
-        req.nextUrl.search,
-      {
+      "/api/" +
+      (auth ? "auth/" : "") +
+      parts.join("/") +
+      req.nextUrl.search;
+    const send = () =>
+      fetch(target, {
         method: req.method,
         headers,
         body,
         redirect: "manual",
         cache: "no-store",
         signal: AbortSignal.timeout(15000),
-      },
-    );
+      });
+    let upstream: Response;
+    try {
+      upstream = await send();
+    } catch (error) {
+      // One retry for idempotent reads whose connection failed outright (long-haul network resets).
+      // Never retried: mutations (could duplicate effects) and timeouts (would double the wait).
+      if (
+        !["GET", "HEAD"].includes(req.method) ||
+        (error instanceof Error && error.name === "TimeoutError")
+      )
+        throw error;
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      upstream = await send();
+    }
     const responseHeaders = new Headers({ "Cache-Control": "no-store" });
     const type = upstream.headers.get("content-type");
     if (type) responseHeaders.set("content-type", type);
