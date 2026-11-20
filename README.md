@@ -66,3 +66,11 @@ The owner-confirmed F6.3 photo requirement is preserved: email/password registra
 Production frontend configuration needs server-only `API_BASE_URL=https://api.mziae.com`; do not set LOCAL_INTEGRATION_TEST or put MongoDB, diagnostic, Google, Stripe or ImgBB secrets in browser/public configuration. The final frontend URL and approved backend/provider configuration are pending; no live URL is invented.
 
 See sibling server `docs/F6.4-report.md`, `docs/F6.4-commit-plan.json` and `docs/F6.4-release-plan.md` for the actual blockers, genuine staged-snapshot review order, hosted acceptance and coordinated rollback. Commit/push/publication, production writes and operational mail/cron activation require separate approval.
+
+## F7.2 local marketplace experience
+
+Compare up to three current approved listings at `/compare`; rates remain explicitly daily, weekly or monthly. Comparison and the last eight viewed listings persist only equipment IDs in this browser, with clear controls and in-memory fallback when storage is unavailable. Recently Viewed appears on the catalog, not the homepage. On a shared device, clear these lists when desired; neither list is saved to an account.
+
+Protected detail pages offer native sharing and a canonical Copy Link/manual fallback. The booking summary now requests a read-only server estimate rather than duplicating rental arithmetic. The backend remains authoritative at Checkout; no fees or payment behavior were added. Required local backend endpoints are `equipment/selection` and `equipment/:id/quote`. Release the reviewed backend contract before publishing this frontend. No provider secret belongs in this repository.
+
+Use the isolated thirty-item API and `EQUIPORA_TEST_F5=1` for the expanded browser suite. The moved email browser test now runs in the server repository with `npm run test:email-browser`; this client installs, typechecks and builds without an adjacent server checkout. No production service, cron or email delivery is activated by these features.

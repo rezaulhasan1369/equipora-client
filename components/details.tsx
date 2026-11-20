@@ -8,6 +8,11 @@ import { CompareButton } from "./discovery";
 import { EquipmentVisual } from "./equipment-visual";
 import { EquipmentSharing } from "./equipment-sharing";
 import { rememberEquipment } from "@/lib/discovery-store";
+import {
+  RentalBreakdown,
+  useRentalEstimate,
+  type RentalPeriod,
+} from "./rental-breakdown";
 export function Details({ id: requestedId }: { id: string }) {
   const id = requestedId.toLowerCase();
   const { user } = useSession(),
@@ -16,9 +21,19 @@ export function Details({ id: requestedId }: { id: string }) {
     [notice, setNotice] = useState(""),
     [modal, setModal] = useState(false),
     [busy, setBusy] = useState(false),
-    [quote, setQuote] = useState(0);
+    [period, setPeriod] = useState<RentalPeriod>({
+      start: "",
+      end: "",
+      quantity: 1,
+    });
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const bookButton = useRef<HTMLButtonElement>(null);
   const [version, setVersion] = useState(0);
+  const estimate = useRentalEstimate(id, item?.quantity ?? 0, period, modal);
+  function closeBooking() {
+    setModal(false);
+    requestAnimationFrame(() => bookButton.current?.focus());
+  }
   useEffect(() => {
     const d = dialogRef.current;
     if (modal && d && !d.open) {
@@ -138,8 +153,13 @@ export function Details({ id: requestedId }: { id: string }) {
             <div className="detail-actions">
               <button
                 className="btn btn-primary"
+                ref={bookButton}
                 disabled={item.quantity < 1}
-                onClick={() => setModal(true)}
+                onClick={() => {
+                  setPeriod({ start: "", end: "", quantity: 1 });
+                  setError("");
+                  setModal(true);
+                }}
               >
                 Book now
               </button>
@@ -189,13 +209,13 @@ export function Details({ id: requestedId }: { id: string }) {
           ref={dialogRef}
           className="modal"
           aria-labelledby="booking-title"
-          onCancel={() => setModal(false)}
+          onCancel={closeBooking}
         >
           <div className="modal-box">
             <button
               className="btn btn-ghost modal-close"
               aria-label="Close booking"
-              onClick={() => setModal(false)}
+              onClick={closeBooking}
             >
               <X />
             </button>
@@ -204,25 +224,18 @@ export function Details({ id: requestedId }: { id: string }) {
             <form
               onSubmit={book}
               onChange={(e) => {
-                const f = new FormData(e.currentTarget);
-                const days =
-                  (Date.parse(String(f.get("end"))) -
-                    Date.parse(String(f.get("start")))) /
-                  86400000;
-                setQuote(
-                  days > 0
-                    ? Math.ceil(
-                        days /
-                          (item.rentalType === "weekly"
-                            ? 7
-                            : item.rentalType === "monthly"
-                              ? 30
-                              : 1),
-                      ) *
-                        Number(f.get("quantity")) *
-                        Math.round(item.price * 100)
-                    : 0,
-                );
+                const target = e.nativeEvent.target;
+                if (
+                  !(target instanceof HTMLInputElement) ||
+                  !["start", "end", "quantity"].includes(target.name)
+                )
+                  return;
+                const form = new FormData(e.currentTarget);
+                setPeriod({
+                  start: String(form.get("start")),
+                  end: String(form.get("end")),
+                  quantity: Number(form.get("quantity")),
+                });
               }}
             >
               <div className="form-grid">
@@ -284,9 +297,11 @@ export function Details({ id: requestedId }: { id: string }) {
                 Additional notes
                 <textarea className="textarea" name="notes" maxLength={1000} />
               </label>
-              <p className="quote" role="status">
-                Estimated total <strong>{money(quote)}</strong>
-              </p>
+              <RentalBreakdown
+                item={item}
+                period={period}
+                estimate={estimate}
+              />
               <p className="small-print">
                 The end date is exclusive. Weekly and monthly periods round up;
                 one month is 30 days. Final availability and price are verified
@@ -299,7 +314,7 @@ export function Details({ id: requestedId }: { id: string }) {
               )}
               <button
                 className="btn btn-primary full-width"
-                disabled={busy || quote <= 0}
+                disabled={busy || !estimate.quote}
               >
                 {busy
                   ? "Checking availability…"
