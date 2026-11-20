@@ -329,6 +329,7 @@ export function Rentals() {
                     "Total",
                     "Payment",
                     "Status",
+                    ...(user?.role !== "admin" ? ["Details"] : []),
                     ...(user?.role !== "customer" ? ["Customer"] : []),
                     ...(user?.role === "admin" ? ["Owner", "Manage"] : []),
                   ].map((h) => (
@@ -365,6 +366,16 @@ export function Rentals() {
                       </span>
                     </td>
                     <td>{r.bookingStatus}</td>
+                    {user?.role !== "admin" && (
+                      <td>
+                        <Link
+                          className="text-link"
+                          href={"/dashboard/rentals/" + r.id}
+                        >
+                          Rental details
+                        </Link>
+                      </td>
+                    )}
                     {user?.role !== "customer" && (
                       <td>
                         {r.customerName}
