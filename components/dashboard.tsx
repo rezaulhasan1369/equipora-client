@@ -13,6 +13,7 @@ import {
   type Role,
 } from "@/lib/types";
 import { useSession } from "./session";
+import { greetingName } from "@/lib/display-name";
 import {
   ArrowUpRight,
   Package,
@@ -91,7 +92,7 @@ export function Overview() {
   return (
     <>
       <p className="eyebrow">YOUR EQUIPORA</p>
-      <h1>Good to see you, {user?.name.split(" ")[0]}.</h1>
+      <h1>Good to see you, {greetingName(user?.name)}.</h1>
       <p className="lead">Here’s where your next project takes shape.</p>
       {user?.role === "customer" ? (
         <div className="overview-links">
@@ -858,8 +859,19 @@ export function UsersManager() {
         </p>
       )}
       {data && (
-        <div className="table-container">
-          <table className="table">
+        <p className="table-scroll-hint" id="users-table-hint">
+          Swipe to view more columns <span aria-hidden="true">→</span>
+        </p>
+      )}
+      {data && (
+        <div
+          className="table-container"
+          role="region"
+          aria-label="All users table"
+          aria-describedby="users-table-hint"
+          tabIndex={0}
+        >
+          <table className="table users-table">
             <thead>
               <tr>
                 {["Name", "Email", "Role", "Registered", "Access"].map((h) => (
@@ -870,8 +882,8 @@ export function UsersManager() {
             <tbody>
               {data.items.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
+                  <td className="cell-name">{user.name}</td>
+                  <td className="cell-email">{user.email}</td>
                   <td>
                     <select
                       className="select select-sm"

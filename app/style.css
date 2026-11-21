@@ -1996,3 +1996,18 @@ body:has(.main-nav.is-open) .comparison-tray{visibility:hidden;pointer-events:no
 /* The hero keeps its light artwork in dark mode, so its secondary link must keep the hero's dark ink
    (the generic dark-theme link colour made "See how it works" nearly invisible). */
 [data-theme=dark] .premium-hero .text-link{color:#233544;border-color:#233544}
+/* Admin dashboard mobile refinements (desktop/tablet unchanged above 767px). */
+.table-scroll-hint{display:none}
+.table-container:focus-visible{outline:3px solid #b66837;outline-offset:3px}
+@media(max-width:767px){
+  .users-table .cell-name{min-width:150px}
+  .users-table .cell-email{min-width:190px;max-width:260px;overflow-wrap:anywhere}
+  .table-scroll-hint{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin:22px 0 -18px;font-size:.68rem;color:#53677a}
+  .dashboard-sidebar nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;overflow-x:visible}
+  .dashboard-sidebar nav a{justify-content:center;text-align:center;white-space:normal;min-height:44px;padding:10px 8px;border:1px solid #d6dee5;background:#fff;line-height:1.25}
+  .dashboard-sidebar nav a[aria-current="page"]{border-color:#596a7c}
+}
+[data-theme=dark] .table-scroll-hint{color:#bdcddb}
+@media(max-width:767px){[data-theme=dark] .dashboard-sidebar nav a{background:#13283a;border-color:#3a5063}[data-theme=dark] .dashboard-sidebar nav a[aria-current="page"]{background:#596a7c;border-color:#8ca1b3;color:#fff}}
+/* Sidebar avatar initial was light-on-light in dark mode. */
+[data-theme=dark] .avatar-placeholder{background:#2a4255;color:#e6eef5}
